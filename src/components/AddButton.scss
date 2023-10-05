@@ -1,0 +1,15 @@
+.EmojiPickerReact.epr-dark-theme {
+  --epr-bg-color: theme("colors.zinc.900") !important;
+  --epr-category-label-bg-color: theme("colors.zinc.900") !important;
+  --epr-hover-bg-color: theme("colors.zinc.900") !important;
+  --epr-text-color: theme("colors.slate.100") !important;
+
+  &.epr-main {
+    @apply shadow-xl px-2 pt-1.5;
+
+    & .epr-emoji-category-label,
+    .epr-search {
+      @apply font-sans font-medium;
+    }
+  }
+}

@@ -11,7 +11,7 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: "autoUpdate",
-      includeAssets: "*",
+      includeAssets: "**/*",
       includeManifestIcons: true,
       manifest: {
         id: "sh.arn.habits",

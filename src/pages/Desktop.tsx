@@ -1,5 +1,4 @@
 import { ExclamationTriangleIcon } from "@heroicons/react/24/solid";
-import "./Desktop.scss";
 
 export default function Desktop() {
   return (
@@ -9,6 +8,7 @@ export default function Desktop() {
         <h1 className="text-3xl font-black">
           Open this page on a <i>phone</i> and even install it!
         </h1>
+        <h5 className="text-xs">v1.0.0</h5>
       </div>
     </>
   );

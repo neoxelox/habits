@@ -5,7 +5,6 @@ import { useWritable } from "react-use-svelte-store";
 import { habits } from "../stores";
 import { type Habit } from "../types";
 import Calendar from "./Calendar";
-import "./Habit.scss";
 
 const SHOWN_MARKS: number = 21 * 7;
 

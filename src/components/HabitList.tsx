@@ -1,7 +1,6 @@
 import { useReadable } from "react-use-svelte-store";
 import { habits } from "../stores";
 import Habit from "./Habit";
-import "./HabitList.scss";
 
 export default function HabitList() {
   const $habits = useReadable(habits);

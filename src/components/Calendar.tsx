@@ -2,7 +2,6 @@ import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/20/solid";
 import dayjs from "dayjs";
 import { useState } from "react";
 import { type Habit } from "../types";
-import "./Calendar.scss";
 
 const SHOWN_DAYS: number = 6 * 7;
 

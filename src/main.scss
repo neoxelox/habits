@@ -12,6 +12,12 @@
   -webkit-tap-highlight-color: transparent;
 }
 
+@supports (font-variation-settings: normal) {
+  :root {
+    font-family: "Inter var", system-ui, Avenir, Helvetica, Arial, sans-serif;
+  }
+}
+
 @layer utilities {
   /* Hide scrollbar for Chrome, Safari and Opera */
   .no-scrollbar::-webkit-scrollbar {

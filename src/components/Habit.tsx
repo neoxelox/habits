@@ -2,6 +2,7 @@ import { CheckIcon, XMarkIcon } from "@heroicons/react/24/solid";
 import dayjs from "dayjs";
 import { useState } from "react";
 import { useWritable } from "react-use-svelte-store";
+import { useLongPress } from "../hooks/useLongPress";
 import { habits } from "../stores";
 import { type Habit } from "../types";
 import Calendar from "./Calendar";
@@ -22,11 +23,10 @@ export default function Habit(props: Habit) {
     <>
       <li
         className="h-auto w-full rounded-xl bg-zinc-800 px-2.5 py-2.5 shadow-xl flex flex-col justify-start items-center gap-3 z-10"
-        onContextMenu={(e) => {
-          e.preventDefault();
+        {...useLongPress(() => {
           setDeleteBtn(!$deleteBtn);
           setDeleteAnim(true);
-        }}
+        })}
       >
         <div className="w-full flex flex-row justify-between items-center gap-5 z-20">
           <div

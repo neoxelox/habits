@@ -2,6 +2,7 @@ import { CheckIcon } from "@heroicons/react/24/solid";
 import EmojiPicker, { EmojiStyle, Theme } from "emoji-picker-react";
 import { useState } from "react";
 import { useWritable } from "react-use-svelte-store";
+import { useLongPress } from "../hooks/useLongPress";
 import { habits } from "../stores";
 import { HabitColor, type Habit } from "../types";
 import "./AddButton.scss";
@@ -58,12 +59,11 @@ export default function AddButton() {
               setEmojiOpen(!$emojiOpen);
               setEmojiAnim(true);
             }}
-            onContextMenu={(e) => {
-              e.preventDefault();
+            {...useLongPress(() => {
               const colors = Object.values(HabitColor);
               setNewHabit({ ...$newHabit, color: colors[(colors.indexOf($newHabit.color) + 1) % colors.length] });
               setColorAnim(true);
-            }}
+            })}
             onAnimationEnd={() => setColorAnim(false)}
           >
             <p className="h-5 w-5 leading-[1.25rem] self-center text-center align-middle select-none">

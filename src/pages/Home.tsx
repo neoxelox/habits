@@ -1,5 +1,6 @@
 import AddButton from "../components/AddButton";
 import HabitList from "../components/HabitList";
+import { useLongPress } from "../hooks/useLongPress";
 
 export default function Home() {
   return (
@@ -9,10 +10,9 @@ export default function Home() {
         <AddButton />
         <div
           className="bg-transparent w-10 h-10 fixed bottom-0 left-0 z-[99]"
-          onContextMenu={(e) => {
-            e.preventDefault();
-            alert("v1.0.0");
-          }}
+          {...useLongPress(() => {
+            alert("v1.1.0");
+          })}
         ></div>
       </div>
     </>

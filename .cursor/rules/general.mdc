@@ -1,0 +1,59 @@
+---
+description: Habits PWA Project Rules Overview
+alwaysApply: true
+---
+# Habits PWA Project Rules
+
+## Overview
+
+- "Habits" is a mobile-first PWA for habit tracking, inspired by GitHub's commit calendar.
+- Built with React + TypeScript, using Tailwind CSS for styling.
+- All data is stored in local storage; there is no backend.
+- The app is designed for mobile browsers only. Desktop users see a prompt to use a phone.
+
+## Directory Structure
+
+- `src/components/`: Reusable UI components (Habit, HabitList, AddButton, Calendar, etc.)
+- `src/pages/`: Top-level pages (Home, Desktop, Error)
+- `src/assets/`: Static assets (currently empty)
+- `src/hooks/`: Reusable React hooks (e.g., useLongPress for mobile-friendly long-press actions)
+- `src/main.tsx`: App entry point, sets up dayjs plugins and renders the router.
+- `src/routes.tsx`: Routing logic; mobile users get the app, desktop users get a prompt.
+- `src/types.ts`: TypeScript types and enums (notably Habit and HabitColor).
+- `src/stores.ts`: Svelte-style local storage store for habits.
+- `src/main.scss`: Global styles, uses Tailwind CSS.
+- `public/`: Fonts and icons for PWA/branding.
+- `index.html`: Root HTML, includes PWA meta tags and icons.
+
+## Key Concepts
+
+- Habit model: `{ name, icon (emoji), color (from HabitColor), marks (array of Date) }`
+- State is managed with svelte-local-storage-store for persistent, reactive local storage.
+- UI flow:
+  - Home: Shows all habits (HabitList), with a floating button to add new ones (AddButton).
+  - Habit card: Tap to mark as done for today, long-press to show delete, tap graph to open calendar.
+  - Calendar: Edit marks for any day in a month view.
+  - Add/Edit Habit: Modal with emoji picker, color cycling, and name input.
+  - Delete Habit: Long-press card, then tap ❎.
+- Mobile-only: Desktop users are redirected to a "use on phone" page.
+- Styling: Tailwind CSS, custom utility classes for scrollbars, Inter font.
+- PWA: Manifest and icons are set up in index.html. (No explicit service worker found.)
+
+## Development Notes
+
+- All data is local: No backend, so changes are instant and only affect the current device.
+- Type safety: All habit logic should use the `Habit` interface and `HabitColor` enum from `types.ts`.
+- Component-driven: UI is highly modular; reuse and extend components as needed.
+- Animations: Many UI actions (add, delete, open modals) use CSS animations for feedback.
+- No desktop support: Don't add desktop features unless explicitly requested.
+- PWA: If adding features, ensure they work offline and respect the PWA paradigm.
+
+## Quick Reference
+
+- Add new habit: Edit `AddButton.tsx` and `HabitList.tsx`.
+- Change habit model: Update `types.ts`, `stores.ts`, and all components using `Habit`.
+- Calendar logic: See `Calendar.tsx` and how it's invoked from `Habit.tsx`.
+- Routing: Controlled in `routes.tsx` (mobile vs. desktop).
+- Global styles: `main.scss` and Tailwind config.
+
+# End of rules

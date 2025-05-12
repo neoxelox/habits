@@ -14,13 +14,13 @@ Habits is a simple habit tracking app shipped in an offline-oriented standalone 
 
 ![Dashboard](./docs/dashboard.png "Dashboard")
 
-With Habits you can track an unlimited amount of daily activities with 7 different color palettes an every emoji imaginable. Habits and completions are only saved in your local storage. To complete your daily Habit just tap on its ✅ button!
+With Habits you can track an unlimited amount of daily activities with 7 different color palettes and every emoji imaginable. Habits and completions are only saved in your local storage. To complete your daily Habit just tap on its ✅ button!
 
 ### Create Habits
 
 ![Create](./docs/create.png "Create")
 
-To create an Habit is as simple as tapping on the floating button on the bottom-right corner. Change the Habit's name with the input box; change the icon tapping on the default 🚀 emoji; and change the color by holding down the icon, it will circle through the different available palettes. Finally, tap on the ✅ button to save it.
+To create a Habit is as simple as tapping on the floating button on the bottom-right corner. Change the Habit's name with the input box; change the icon tapping on the default 🚀 emoji; and change the color by holding down the icon, it will circle through the different available palettes. Finally, tap on the ✅ button to save it.
 
 ### Check and Edit the Calendar
 
@@ -28,11 +28,11 @@ To create an Habit is as simple as tapping on the floating button on the bottom-
 
 By tapping on the Habit's tracking graph you will access a calendar where you will be able to check specifically whether a certain day you completed the Habit or not. Moreover, you will be able to edit the completions by tapping on the desired dates.
 
-### Delete Habits
+### Reorder and Delete Habits
 
 ![Delete](./docs/delete.png "Delete")
 
-To delete an Habit hold down the card itself, an ❎ button will appear in the top-left corner of the card, tap on it to delete the selected Habit.
+To reorder a Habit hold down the card header itself, the list will enter drag & drop mode, hold down on the desired Habit and move it within the list. To delete a Habit hold down the Habit's emoji in the top-left corner of the card, a ❎ button will appear, tap on it to delete the selected Habit.
 
 ## Contribute
 

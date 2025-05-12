@@ -1,7 +1,7 @@
 {
   "name": "frontend",
   "private": true,
-  "version": "1.1.0",
+  "version": "1.2.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -11,6 +11,9 @@
     "format": "prettier --ignore-path .gitignore --write src/**/*.{ts,tsx} && eslint --ext .ts,.tsx --report-unused-disable-directives --max-warnings 0 --ignore-path .gitignore --fix src && stylelint --ignore-path .gitignore --fix src/**/*.{css,scss}"
   },
   "dependencies": {
+    "@dnd-kit/core": "^6.3.1",
+    "@dnd-kit/modifiers": "^9.0.0",
+    "@dnd-kit/sortable": "^10.0.0",
     "@headlessui/react": "^1.7.17",
     "@heroicons/react": "^2.0.18",
     "dayjs": "^1.11.10",

@@ -1,100 +1,154 @@
+import { useSortable } from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 import { CheckIcon, XMarkIcon } from "@heroicons/react/24/solid";
 import dayjs from "dayjs";
-import { useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { useWritable } from "react-use-svelte-store";
 import { useLongPress } from "../hooks/useLongPress";
 import { habits } from "../stores";
-import { type Habit } from "../types";
+import { type Habit as HabitType } from "../types";
 import Calendar from "./Calendar";
 
-const SHOWN_MARKS: number = 21 * 7;
+const SHOWN_MARKS = 21 * 7;
 
-export default function Habit(props: Habit) {
+interface HabitProps extends HabitType {
+  dragMode: boolean;
+  deleteMode: boolean;
+  setDeleteMode: (id: string | null) => void;
+  onLongPress: () => void;
+}
+
+export default function Habit(props: HabitProps) {
   const [, , updateHabits] = useWritable(habits);
-  const [$deleteBtn, setDeleteBtn] = useState(false);
   const [$calendarOpen, setCalendarOpen] = useState(false);
   const [$deleteAnim, setDeleteAnim] = useState(false);
   const [$checkAnim, setCheckAnim] = useState(false);
 
-  // Order columns of days starting on Mondays by displaying the rest of days to next Monday
-  const DAYS_TO_NEXT_WEEK = Math.ceil(dayjs().add(1, "week").startOf("isoWeek").diff(dayjs(), "day", true));
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
+    id: props.id,
+    disabled: !props.dragMode,
+  });
+
+  const style = useMemo(
+    () => ({
+      transform: CSS.Transform.toString(transform),
+      transition,
+      opacity: isDragging ? 0.7 : 1,
+      zIndex: isDragging ? 50 : 10,
+      cursor: props.dragMode ? "grab" : undefined,
+    }),
+    [transform, transition, isDragging, props.dragMode],
+  );
+
+  const toggleTodayMark = useCallback(
+    (e: React.MouseEvent | React.TouchEvent) => {
+      e.stopPropagation();
+      updateHabits((habits) =>
+        habits.map((habit) => {
+          if (habit.id === props.id) {
+            const todayMarked = habit.marks.some((mark) => dayjs(mark).isToday());
+            habit.marks = todayMarked
+              ? habit.marks.filter((mark) => !dayjs(mark).isToday())
+              : [...habit.marks, dayjs().toDate()];
+          }
+          return habit;
+        }),
+      );
+      setCheckAnim(true);
+    },
+    [props.id, updateHabits],
+  );
+
+  const handleDelete = useCallback(
+    (e: React.MouseEvent | React.TouchEvent) => {
+      e.stopPropagation();
+      updateHabits((habits) => habits.filter((habit) => habit.id !== props.id));
+    },
+    [props.id, updateHabits],
+  );
+
+  const DAYS_TO_NEXT_WEEK = useMemo(
+    () => Math.ceil(dayjs().add(1, "week").startOf("isoWeek").diff(dayjs(), "day", true)),
+    [],
+  );
+
+  const deleteLongPressProps = useLongPress(
+    () => {
+      if (!props.dragMode) {
+        props.setDeleteMode(props.deleteMode ? null : props.id);
+        setDeleteAnim(true);
+      }
+    },
+    { ms: 500, stopPropagationOnStart: true },
+  );
+
+  const dragLongPressProps = useLongPress(
+    () => {
+      if (!props.deleteMode) {
+        props.onLongPress();
+      }
+    },
+    { ms: 800 },
+  );
 
   return (
     <>
       <li
-        className="h-auto w-full rounded-xl bg-zinc-800 px-2.5 py-2.5 shadow-xl flex flex-col justify-start items-center gap-3 z-10"
-        {...useLongPress(() => {
-          setDeleteBtn(!$deleteBtn);
-          setDeleteAnim(true);
-        })}
+        ref={setNodeRef}
+        style={style}
+        {...attributes}
+        {...listeners}
+        className={`h-auto w-full rounded-xl bg-zinc-800 px-2.5 py-2.5 shadow-xl flex flex-col justify-start items-center gap-3 transition-all duration-200 ease-out ${
+          props.dragMode ? "ring-2 ring-white/50" : ""
+        }`}
       >
-        <div className="w-full flex flex-row justify-between items-center gap-5 z-20">
+        <div className="w-full flex flex-row justify-between items-center gap-5" {...dragLongPressProps}>
           <div
+            {...deleteLongPressProps}
             className={`rounded-xl px-1.5 py-1.5 shadow-inner bg-${props.color}-300 shadow-${props.color}-500 ${
               $deleteAnim && "animate-wiggle"
             }`}
             onAnimationEnd={() => setDeleteAnim(false)}
           >
-            {$deleteBtn ? (
-              <XMarkIcon
-                className={`h-5 w-auto self-center text-${props.color}-900`}
-                onClick={() => updateHabits((habits) => habits.filter((habit) => habit.name !== props.name))}
-              />
+            {props.deleteMode ? (
+              <XMarkIcon className={`h-5 w-auto text-${props.color}-900 cursor-pointer`} onClick={handleDelete} />
             ) : (
-              <p className="h-5 w-5 leading-[1.25rem] self-center text-center align-middle select-none">{props.icon}</p>
+              <p className="h-5 w-5 text-center select-none">{props.icon}</p>
             )}
           </div>
 
-          <h1 className="text-slate-100 font-medium tracking-tight text-base text-center text-ellipsis truncate select-none">
-            {props.name}
-          </h1>
+          <h1 className="text-slate-100 font-medium tracking-tight text-base truncate select-none">{props.name}</h1>
 
           <div
             className={`rounded-xl px-1.5 py-1.5 shadow-inner cursor-pointer ${
-              props.marks.find((mark) => dayjs(mark).isToday())
+              props.marks.some((mark) => dayjs(mark).isToday())
                 ? `bg-${props.color}-500 shadow-${props.color}-300`
                 : `bg-${props.color}-300 shadow-${props.color}-500`
             } ${$checkAnim && "animate-wiggle"}`}
-            onClick={() => {
-              updateHabits((habits) =>
-                habits.map((habit) => {
-                  if (habit.name === props.name) {
-                    if (habit.marks.find((mark) => dayjs(mark).isToday())) {
-                      habit.marks = habit.marks.filter((mark) => !dayjs(mark).isToday());
-                    } else {
-                      habit.marks.push(dayjs().toDate());
-                    }
-                  }
-
-                  return habit;
-                }),
-              );
-              setCheckAnim(true);
-            }}
+            onClick={toggleTodayMark}
             onAnimationEnd={() => setCheckAnim(false)}
           >
             <CheckIcon
-              className={`h-5 w-auto self-center ${
-                props.marks.find((mark) => dayjs(mark).isToday()) ? "text-white" : `text-${props.color}-900`
+              className={`h-5 w-auto ${
+                props.marks.some((mark) => dayjs(mark).isToday()) ? "text-white" : `text-${props.color}-900`
               }`}
             />
           </div>
         </div>
         <ul
-          className={`h-[6.75rem] w-full flex flex-col flex-wrap justify-between items-center gap-1 overflow-y-hidden overflow-x-scroll no-scrollbar`}
+          className="h-[6.75rem] w-full flex flex-col flex-wrap gap-1 overflow-y-hidden overflow-x-scroll no-scrollbar cursor-pointer"
           onClick={() => setCalendarOpen(true)}
         >
           {[...Array(SHOWN_MARKS)].map((_, i) => {
             const day = dayjs().subtract(SHOWN_MARKS - DAYS_TO_NEXT_WEEK - i, "day");
-            const hasMark = props.marks.find((mark) => day.isSame(mark, "day"));
-
+            const hasMark = props.marks.some((mark) => day.isSame(mark, "day"));
             return (
               <li
                 key={i}
-                className={`rounded-[0.250rem] px-1.5 py-1.5 relative z-30 ${
+                className={`rounded-[0.25rem] px-1.5 py-1.5 ${
                   hasMark ? `bg-${props.color}-500` : `bg-${props.color}-100`
                 }`}
-              ></li>
+              />
             );
           })}
         </ul>
@@ -105,10 +159,9 @@ export default function Habit(props: Habit) {
           onClose={(marks: Date[]) => {
             updateHabits((habits) =>
               habits.map((habit) => {
-                if (habit.name === props.name) {
+                if (habit.id === props.id) {
                   habit.marks = marks;
                 }
-
                 return habit;
               }),
             );

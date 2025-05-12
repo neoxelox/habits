@@ -7,18 +7,19 @@ import { habits } from "../stores";
 import { HabitColor, type Habit } from "../types";
 import "./AddButton.scss";
 
-const DEFAULT_HABIT: Habit = {
+const createNewHabit = (): Habit => ({
+  id: Math.random().toString(36).substring(2, 9),
   name: "",
   icon: "🚀",
   color: HabitColor.STONE,
   marks: [],
-};
+});
 
 export default function AddButton() {
   const [$habits, , updateHabits] = useWritable(habits);
   const [$modalOpen, setModalOpen] = useState(false);
   const [$modalAnim, setModalAnim] = useState(false);
-  const [$newHabit, setNewHabit] = useState<Habit>(JSON.parse(JSON.stringify(DEFAULT_HABIT)));
+  const [$newHabit, setNewHabit] = useState<Habit>(createNewHabit());
   const [$colorAnim, setColorAnim] = useState(false);
   const [$emojiOpen, setEmojiOpen] = useState(false);
   const [$emojiAnim, setEmojiAnim] = useState(false);
@@ -84,7 +85,7 @@ export default function AddButton() {
             onClick={() => {
               if ($newHabit.name && !$habits.find((habit) => habit.name === $newHabit.name)) {
                 updateHabits((habits) => [...habits, $newHabit]);
-                setNewHabit(JSON.parse(JSON.stringify(DEFAULT_HABIT)));
+                setNewHabit(createNewHabit());
                 if ($emojiOpen) {
                   setEmojiOpen(false);
                   setEmojiAnim(true);

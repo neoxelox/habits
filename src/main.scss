@@ -10,6 +10,23 @@
   -moz-osx-font-smoothing: grayscale;
   text-size-adjust: 100%;
   -webkit-tap-highlight-color: transparent;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+html,
+body {
+  background: #000000 !important;
+}
+
+input,
+textarea {
+  -webkit-user-select: auto;
+  -moz-user-select: auto;
+  -ms-user-select: auto;
+  user-select: auto;
 }
 
 @supports (font-variation-settings: normal) {

@@ -1,47 +1,76 @@
 import { useCallback, useRef } from "react";
 
-export function useLongPress(callback: (e: React.MouseEvent | React.TouchEvent) => void, ms = 500) {
+type Event = React.MouseEvent | React.TouchEvent;
+
+type ExtendedCSS = CSSStyleDeclaration & {
+  webkitTouchCallout?: string;
+  webkitUserSelect?: string;
+};
+
+interface LongPressOptions {
+  ms?: number;
+  stopPropagationOnStart?: boolean;
+}
+
+export function useLongPress(callback: (e: Event) => void, options?: LongPressOptions) {
+  const { ms = 500, stopPropagationOnStart = false } = options || {};
   const timerRef = useRef<NodeJS.Timeout | null>(null);
-  const firedRef = useRef(false);
+  const triggeredRef = useRef(false);
+
+  const setNoSelectStyles = useCallback(() => {
+    const style = document.body.style as ExtendedCSS;
+    style.userSelect = "none";
+    style.webkitUserSelect = "none";
+    style.webkitTouchCallout = "none";
+  }, []);
+
+  const clearNoSelectStyles = useCallback(() => {
+    const style = document.body.style as ExtendedCSS;
+    style.userSelect = "";
+    style.webkitUserSelect = "";
+    style.webkitTouchCallout = "";
+  }, []);
 
   const start = useCallback(
-    (e: React.MouseEvent | React.TouchEvent) => {
-      // Prevent context menu on long press
-      if ("preventDefault" in e) e.preventDefault();
-      firedRef.current = false;
+    (e: Event) => {
+      if ("button" in e && e.button !== 0) return;
+      if (stopPropagationOnStart) {
+        e.stopPropagation();
+      }
+      triggeredRef.current = false;
+
       timerRef.current = setTimeout(() => {
         callback(e);
-        firedRef.current = true;
+        triggeredRef.current = true;
+        setNoSelectStyles();
       }, ms);
     },
-    [callback, ms],
+    [callback, ms, stopPropagationOnStart, setNoSelectStyles],
   );
 
-  const clear = useCallback((e?: React.MouseEvent | React.TouchEvent) => {
-    if (timerRef.current) {
-      clearTimeout(timerRef.current);
-      timerRef.current = null;
-    }
-    // Prevent click after long press
-    if (firedRef.current && e && "preventDefault" in e) {
-      e.preventDefault();
-      e.stopPropagation && e.stopPropagation();
-    }
-  }, []);
+  const clear = useCallback(
+    (e?: Event) => {
+      if (timerRef.current) {
+        clearTimeout(timerRef.current);
+        timerRef.current = null;
+      }
+      if (triggeredRef.current && e) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
+      triggeredRef.current = false;
+      clearNoSelectStyles();
+    },
+    [clearNoSelectStyles],
+  );
 
   return {
     onMouseDown: start,
+    onTouchStart: start,
     onMouseUp: clear,
     onMouseLeave: clear,
-    onTouchStart: start,
     onTouchEnd: clear,
     onTouchCancel: clear,
-    onContextMenu: (e: React.MouseEvent) => {
-      e.preventDefault();
-      if (!firedRef.current) {
-        callback(e);
-        firedRef.current = true;
-      }
-    },
+    onContextMenu: (e: React.MouseEvent) => e.preventDefault(),
   };
 }

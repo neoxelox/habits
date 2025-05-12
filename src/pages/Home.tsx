@@ -11,7 +11,7 @@ export default function Home() {
         <div
           className="bg-transparent w-10 h-10 fixed bottom-0 left-0 z-[99]"
           {...useLongPress(() => {
-            alert("v1.1.0");
+            alert("v1.2.0");
           })}
         ></div>
       </div>
